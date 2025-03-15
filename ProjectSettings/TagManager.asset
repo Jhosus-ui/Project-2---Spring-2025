@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 3
   tags:
   - 'Suelo '
+  - OneWayPlatform
   layers:
   - Default
   - TransparentFX
@@ -12,7 +13,7 @@ TagManager:
   - Paralax
   - Water
   - UI
-  - 'Platformer '
+  - Platformer
   - 'Suelo '
   - 'Pared '
   - 'Player '
