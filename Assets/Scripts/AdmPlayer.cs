@@ -4,6 +4,7 @@ public class PlayerManager : MonoBehaviour
 {
     [Header("Player Settings")]
     public bool movementEnabled = true; // Activa o desactiva el movimiento
+    public bool climbingEnabled = true; // Activa o desactiva la escalada
 
     private PlayerMovement playerMovement;
 

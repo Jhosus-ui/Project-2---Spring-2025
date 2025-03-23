@@ -6,6 +6,7 @@ TagManager:
   tags:
   - 'Suelo '
   - OneWayPlatform
+  - Ladder
   layers:
   - Default
   - TransparentFX
@@ -17,7 +18,7 @@ TagManager:
   - 'Suelo '
   - 'Pared '
   - 'Player '
-  - 
+  - 'Escaleras '
   - 
   - 
   - 

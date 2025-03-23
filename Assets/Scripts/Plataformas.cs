@@ -29,7 +29,7 @@ public class Plataformas : MonoBehaviour
         // Si el personaje toca la plataforma desde abajo y LeftPlatform es false
         if (collision.gameObject.CompareTag("Player") && !LeftPlatform)
         {
-            // Verifica si el personaje está tocando la plataforma desde abajo
+            // Verifica si el personaje estÃ¡ tocando la plataforma desde abajo
             if (collision.relativeVelocity.y > 0)
             {
                 // Aplica un impulso hacia arriba al personaje
@@ -44,6 +44,6 @@ public class Plataformas : MonoBehaviour
         // Restablece la plataforma
         pE2D.rotationalOffset = 0;
         LeftPlatform = false;
-        gameObject.layer = 6 | 7; // Restablece la capa original (ajusta según tus Layers)
+        gameObject.layer = 6 | 7; // Restablece la capa original (ajusta segÃºn tus Layers)
     }
 }
