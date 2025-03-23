@@ -17,10 +17,10 @@ TagManager:
   - Platforms
   - 'Suelo '
   - 'Pared '
-  - 'Player '
+  - 
   - 'Escaleras '
   - 
-  - 
+  - 'Player '
   - 
   - 
   - 
@@ -43,6 +43,21 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: 'Fondo '
+    uniqueID: 2163568807
+    locked: 0
+  - name: Mapa
+    uniqueID: 3687166155
+    locked: 0
+  - name: 'Escaleras '
+    uniqueID: 2647058007
+    locked: 0
+  - name: 'Plataformas '
+    uniqueID: 63076551
+    locked: 0
+  - name: Personajes
+    uniqueID: 4029775519
     locked: 0
   m_RenderingLayers:
   - Default

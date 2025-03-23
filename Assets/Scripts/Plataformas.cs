@@ -37,6 +37,13 @@ public class Plataformas : MonoBehaviour
                 if (playerRb != null)
                 {
                     playerRb.linearVelocity = new Vector2(playerRb.linearVelocity.x, upwardForce);
+
+                    // Cambia al estado de Subidita
+                    PlayerMovement playerMovement = collision.gameObject.GetComponent<PlayerMovement>();
+                    if (playerMovement != null)
+                    {
+                        playerMovement.StartSubidita();
+                    }
                 }
             }
         }

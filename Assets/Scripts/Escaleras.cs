@@ -19,6 +19,13 @@ public class Ladder : MonoBehaviour
                 isOnLadder = true;
                 playerRb.gravityScale = 0; // Desactiva la gravedad
                 playerRb.linearVelocity = new Vector2(playerRb.linearVelocity.x, 0); // Detén el movimiento vertical
+
+                // Cambia al estado de Escalar
+                PlayerMovement playerMovement = collision.GetComponent<PlayerMovement>();
+                if (playerMovement != null)
+                {
+                    playerMovement.StartEscalar();
+                }
             }
         }
     }
@@ -35,11 +42,25 @@ public class Ladder : MonoBehaviour
             if (verticalInput != 0)
             {
                 playerRb.linearVelocity = new Vector2(playerRb.linearVelocity.x, verticalInput * climbSpeed);
+
+                // Reanuda la animación de escalar
+                PlayerMovement playerMovement = collision.GetComponent<PlayerMovement>();
+                if (playerMovement != null)
+                {
+                    playerMovement.ResumeEscalarAnimation();
+                }
             }
             else
             {
-                // Si no hay entrada, detén el movimiento vertical
+                // Si no hay entrada, detén el movimiento vertical y congela la animación
                 playerRb.linearVelocity = new Vector2(playerRb.linearVelocity.x, 0);
+
+                // Congela la animación de escalar
+                PlayerMovement playerMovement = collision.GetComponent<PlayerMovement>();
+                if (playerMovement != null)
+                {
+                    playerMovement.FreezeEscalarAnimation();
+                }
             }
         }
     }
@@ -53,6 +74,14 @@ public class Ladder : MonoBehaviour
             if (playerRb != null)
             {
                 playerRb.gravityScale = 1; // Reactiva la gravedad
+            }
+
+            // Vuelve al estado normal y reanuda la animación
+            PlayerMovement playerMovement = collision.GetComponent<PlayerMovement>();
+            if (playerMovement != null)
+            {
+                playerMovement.ResetState();
+                playerMovement.ResumeEscalarAnimation();
             }
         }
     }
