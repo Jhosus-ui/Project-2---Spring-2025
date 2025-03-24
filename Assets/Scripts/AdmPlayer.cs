@@ -28,7 +28,7 @@ public class PlayerManager : MonoBehaviour
         // Habilita o deshabilita el ataque según la variable attackEnabled
         if (playerAttack != null)
         {
-            playerAttack.attackEnabled = attackEnabled;
+            playerAttack.enabled = attackEnabled;
         }
     }
 }
