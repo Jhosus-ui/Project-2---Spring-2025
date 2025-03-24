@@ -27,8 +27,8 @@ public class PlayerMovement : MonoBehaviour
         Escalar,
         SwordAttack,
         GunAttack,
-        Roll,
-        Parry
+        //Roll,
+        //Parry
     }
 
     [Header("State")]
@@ -106,10 +106,10 @@ public class PlayerMovement : MonoBehaviour
         UpdateAnimationState(moveInput);
     }
 
-    public bool IsFacingRight()
-    {
-        return isFacingRight;
-    } 
+    //public bool IsFacingRight()
+    //{
+    //    return isFacingRight;
+    //} 
 
     private void FlipCharacter(float moveInput)
     {
@@ -249,19 +249,13 @@ public class PlayerMovement : MonoBehaviour
             case PlayerState.GunAttack:
                 animator.Play("GunAttack");
                 break;
+            //case PlayerState.Roll:
+            //    animator.Play("Roll");
+            //    break;
+            //case PlayerState.Parry:
+            //    animator.Play("Parry");
+            //    break;
         }
-
-        switch (newState)
-        {
-            // ... estados existentes ...
-            case PlayerState.Roll:
-                animator.Play("Roll");
-                break;
-            case PlayerState.Parry:
-                animator.Play("Parry");
-                break;
-        }
-
 
     }
     // Método para resetear después de Subidita
