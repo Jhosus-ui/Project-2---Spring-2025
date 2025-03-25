@@ -35,7 +35,7 @@ public class PlayerAttack : MonoBehaviour
             }
 
             // Ataque con arma
-            else if (Input.GetKeyDown(KeyCode.Q))
+            else if (Input.GetButtonDown("Fire2"))
             {
                 lastAttackTime = Time.time;
                 playerMovement.StartGunAttack(gunAttackDuration);
