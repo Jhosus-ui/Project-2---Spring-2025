@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 public class EnemyPlatformerController : MonoBehaviour
 {
@@ -7,6 +8,7 @@ public class EnemyPlatformerController : MonoBehaviour
         Patrolling,
         Chasing,
         Attacking,
+        AttackWindup, 
         Returning,
         Hit
     }
@@ -177,45 +179,58 @@ public class EnemyPlatformerController : MonoBehaviour
     void HandleAttacking()
     {
         attackTimer += Time.deltaTime;
-        float currentCooldown = firstAttack ? initialAttackDelay : attackCooldown; // Usar initialAttackDelay para el primer ataque
+        float currentCooldown = firstAttack ? initialAttackDelay : attackCooldown;
 
         if (attackTimer >= currentCooldown)
         {
-            // Verificar si hay un jugador en el rango de ataque usando un OverlapBox
-            Collider2D[] hitColliders = Physics2D.OverlapBoxAll(
-                attackPointReference.position,
-                attackAreaSize,
-                0f
-            );
+            // Activar animación primero
+            animator.SetTrigger(ATTACK_TRIGGER);
 
-            bool playerInAttackRange = false;
-            foreach (Collider2D hitCollider in hitColliders)
-            {
-                if (hitCollider.CompareTag("Player"))
-                {
-                    playerInAttackRange = true;
-                    break;
-                }
-            }
+            // Marcar que ya no es el primer ataque
+            firstAttack = false;
 
-            // Solo atacar si hay un jugador en el rango
-            if (playerInAttackRange)
-            {
-                // Trigger attack animation
-                animator.SetTrigger(ATTACK_TRIGGER);
-                attackTimer = 0;
-                firstAttack = false; // Después del primer ataque, cambiar a false
-            }
-        }
+            // Reiniciar timer después de activar la animación
+            attackTimer = 0f;
 
-        // Regresar a persecución si jugador está fuera de rango
-        float distanceToPlayer = Vector2.Distance(transform.position, playerTransform.position);
-        if (distanceToPlayer > attackDistance) // Usar la nueva variable de distancia de ataque
-        {
-            currentState = EnemyState.Chasing;
-            firstAttack = true; // Reiniciar para el próximo encuentro
+            // Cambiar a un estado de "pre-ataque" o esperar a la animación
+            currentState = EnemyState.AttackWindup;
         }
     }
+
+    // Nuevo método para manejar el momento del impacto
+    public void AnimationAttackHitEvent() // Llamado desde Animation Event
+    {
+        if (currentState != EnemyState.Attacking && currentState != EnemyState.AttackWindup)
+            return;
+
+        Collider2D[] hitColliders = Physics2D.OverlapBoxAll(
+            attackPointReference.position,
+            attackAreaSize,
+            0f
+        );
+
+        foreach (Collider2D hitCollider in hitColliders)
+        {
+            if (hitCollider.CompareTag("Player"))
+            {
+                PlayerHealth playerHealth = hitCollider.GetComponent<PlayerHealth>();
+                if (playerHealth != null)
+                {
+                    playerHealth.TakeDamage(1);
+                }
+                break;
+            }
+        }
+    }
+
+    // Nuevo método para cuando termina la animación
+    public void AnimationAttackEnd() // Llamado desde Animation Event
+    {
+        // Verificar si el jugador sigue en rango
+        float distanceToPlayer = Vector2.Distance(transform.position, playerTransform.position);
+        currentState = distanceToPlayer <= attackDistance ? EnemyState.Attacking : EnemyState.Chasing;
+    }
+
 
     void FlipDirection()
     {
