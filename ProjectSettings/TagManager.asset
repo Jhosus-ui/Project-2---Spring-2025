@@ -7,6 +7,8 @@ TagManager:
   - 'Suelo '
   - OneWayPlatform
   - Ladder
+  - Bala
+  - Mapa
   layers:
   - Default
   - TransparentFX
@@ -58,6 +60,9 @@ TagManager:
     locked: 0
   - name: Personajes
     uniqueID: 4029775519
+    locked: 0
+  - name: 'Decorations '
+    uniqueID: 4007551459
     locked: 0
   - name: UI
     uniqueID: 1068655405

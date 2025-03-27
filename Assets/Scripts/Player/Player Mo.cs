@@ -41,7 +41,7 @@ public class PlayerMovement : MonoBehaviour
     private bool canDoubleJump;
     private float coyoteTimeCounter;
     private bool hasJumpedAfterFall;
-    private bool isFacingRight = true;
+    public bool isFacingRight = true;
     private bool isClimbing = false;
 
     // Variables para bloquear movimiento durante ataques
@@ -149,6 +149,7 @@ public class PlayerMovement : MonoBehaviour
         {
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, doubleJumpForce);
             canDoubleJump = false;
+            hasJumpedAfterFall = true; // Asegurarse de que no se pueda saltar después de un doble salto
             ChangeState(PlayerState.Jump);
         }
         // Salto después de caer
@@ -159,6 +160,7 @@ public class PlayerMovement : MonoBehaviour
             ChangeState(PlayerState.Jump);
         }
     }
+
 
     private void UpdateAnimationState(float moveInput)
     {
