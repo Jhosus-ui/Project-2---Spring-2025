@@ -4,46 +4,56 @@ using UnityEngine;
 public class Bala : MonoBehaviour
 {
     [Header("Configuración")]
-    public float speed = 10f;
-    public float maxDistance = 15f;
-    public Vector2 direction = Vector2.right;
+    public float velocidad = 10f;
+    public float distanciaMaxima = 15f;
+    public int dano = 1; // Renombrado de 'damage' a 'dano' para evitar conflictos
 
-    private Vector2 initialPosition;
+    // Dirección se calcula al iniciar, no es pública
+    private Vector2 direccionMovimiento;
+    private Vector2 posicionInicial;
     private Rigidbody2D rb;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        initialPosition = transform.position;
+        posicionInicial = transform.position;
+        rb.linearVelocity = direccionMovimiento * velocidad;
+    }
 
-        // Configurar velocidad inicial
-        rb.linearVelocity = transform.right * speed;
-
-        // Mensaje de creación
-        Debug.Log("Bala creada");
+    // Método para inicializar desde PlayerAttack
+    public void Configurar(Vector2 dir, float vel, float distMax, int danoBala)
+    {
+        direccionMovimiento = dir.normalized;
+        velocidad = vel;
+        distanciaMaxima = distMax;
+        dano = danoBala;
     }
 
     void Update()
     {
-        // Verificar distancia máxima
-        if (Vector2.Distance(initialPosition, transform.position) >= maxDistance)
+        if (Vector2.Distance(posicionInicial, transform.position) >= distanciaMaxima)
         {
-            Destroy(gameObject);
+            DestruirBala();
         }
     }
 
-    void OnTriggerEnter2D(Collider2D collision)
+    void OnTriggerEnter2D(Collider2D otro)
     {
-        // Destruir al chocar con enemigos o paredes
-        if (collision.CompareTag("Enemy") || collision.CompareTag("Mapa"))
+        if (otro.CompareTag("Enemy")) // Asegúrate que tus enemigos tengan este tag
         {
-            Destroy(gameObject);
+            EnemyHealth saludEnemigo = otro.GetComponent<EnemyHealth>();
+            if (saludEnemigo != null) saludEnemigo.TakeDamage(dano);
+
+            DestruirBala();
+        }
+        else if (otro.CompareTag("Mapa")) // Ejemplo de otro objeto
+        {
+            DestruirBala();
         }
     }
 
-    void OnDestroy()
+    void DestruirBala()
     {
-        // Mensaje de destrucción
-        Debug.Log("Bala destruida");
+        Destroy(gameObject);
     }
 }
