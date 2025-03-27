@@ -68,31 +68,23 @@ public class PlayerAttack : MonoBehaviour
     {
         if (gunFirePoint != null && bulletPrefab != null)
         {
-            // Crear la bala
-            GameObject bullet = Instantiate(bulletPrefab, gunFirePoint.position, gunFirePoint.rotation);
+            // 1. Calcular dirección basada en isFacingRight
+            Vector2 direction = playerMovement.isFacingRight ? Vector2.right : Vector2.left;
 
-            // Mensaje de creación
-            Debug.Log("Bala creada");
+            // 2. Instanciar la bala con la rotación correcta
+            GameObject bullet = Instantiate(
+                bulletPrefab,
+                gunFirePoint.position,
+                Quaternion.FromToRotation(Vector2.right, direction) // Rotación explícita
+            );
 
-            // Configurar dirección basada en la mirada del jugador
-            float direction = playerMovement.isFacingRight ? 1 : -1;
-            bullet.transform.right = Vector3.right * direction;
-
-            // Obtener y configurar el componente Bala (usando tu versión antigua mejorada)
+            // 3. Configurar velocidad (el signo ya no es necesario)
             Bala balaScript = bullet.GetComponent<Bala>();
             if (balaScript != null)
             {
-                balaScript.speed = bulletSpeed * direction;
-                balaScript.maxDistance = bulletDistance;
+                balaScript.speed = bulletSpeed; // Usamos valor absoluto
+                balaScript.direction = direction; // Nueva variable en Bala.cs
             }
-            else
-            {
-                Debug.LogError("El prefab de bala no tiene componente Bala");
-            }
-        }
-        else
-        {
-            Debug.LogError("Faltan asignar gunFirePoint o bulletPrefab en el inspector");
         }
     }
 }

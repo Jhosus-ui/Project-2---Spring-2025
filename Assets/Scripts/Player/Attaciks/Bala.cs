@@ -6,6 +6,7 @@ public class Bala : MonoBehaviour
     [Header("Configuración")]
     public float speed = 10f;
     public float maxDistance = 15f;
+    public Vector2 direction = Vector2.right;
 
     private Vector2 initialPosition;
     private Rigidbody2D rb;
@@ -34,7 +35,7 @@ public class Bala : MonoBehaviour
     void OnTriggerEnter2D(Collider2D collision)
     {
         // Destruir al chocar con enemigos o paredes
-        if (collision.CompareTag("Enemy") || collision.CompareTag("Wall"))
+        if (collision.CompareTag("Enemy") || collision.CompareTag("Mapa"))
         {
             Destroy(gameObject);
         }
