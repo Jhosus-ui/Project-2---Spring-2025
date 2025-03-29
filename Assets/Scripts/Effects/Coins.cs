@@ -3,9 +3,9 @@ using UnityEngine;
 public class CollectableCell : MonoBehaviour
 {
     public int puntos = 1;
-    public float levitationHeight = 0.5f; // Altura de la levitación
-    public float levitationSpeed = 1f; // Velocidad del movimiento
-    public AudioClip collectSound; // Sonido al recoger el ítem
+    public float levitationHeight = 0.5f;
+    public float levitationSpeed = 1f; 
+    public AudioClip collectSound; 
 
     private Vector3 startPosition;
     private float randomOffset;
@@ -14,9 +14,7 @@ public class CollectableCell : MonoBehaviour
     private void Start()
     {
         startPosition = transform.position;
-        randomOffset = Random.Range(0f, 2f * Mathf.PI); // Offset aleatorio para variedad
-
-        // Añadir AudioSource si no existe
+        randomOffset = Random.Range(0f, 2f * Mathf.PI); 
         audioSource = GetComponent<AudioSource>();
         if (audioSource == null)
         {

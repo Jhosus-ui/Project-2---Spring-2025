@@ -11,7 +11,7 @@ public class EnemyHealth : MonoBehaviour
     public Animator animator;
     public string hitTrigger = "Hit";
     public string deathTrigger = "Death";
-    public Rigidbody2D rb; // Añadido para control físico
+    public Rigidbody2D rb; 
 
     [Header("Sound Effects")]
     public AudioClip hitSound;
@@ -20,7 +20,7 @@ public class EnemyHealth : MonoBehaviour
 
     public int currentHealth;
     private bool isDead = false;
-    private Vector2 deathPosition; // Guardará la posición al morir
+    private Vector2 deathPosition; 
 
     void Start()
     {
@@ -35,7 +35,6 @@ public class EnemyHealth : MonoBehaviour
 
         currentHealth -= damage;
 
-        // Reproducir sonido de golpe
         if (hitSound != null && audioSource != null)
         {
             audioSource.PlayOneShot(hitSound);
@@ -54,15 +53,14 @@ public class EnemyHealth : MonoBehaviour
     private void Die()
     {
         isDead = true;
-        deathPosition = transform.position; // Captura la posición exacta
+        deathPosition = transform.position; 
 
-        // Reproducir sonido de muerte
         if (deathSound != null && audioSource != null)
         {
             audioSource.PlayOneShot(deathSound);
         }
 
-        // 1. Congelar físicamente el cuerpo
+ 
         if (rb != null)
         {
             rb.linearVelocity = Vector2.zero;
@@ -70,7 +68,6 @@ public class EnemyHealth : MonoBehaviour
             rb.constraints = RigidbodyConstraints2D.FreezeAll;
         }
 
-        // 2. Desactivar scripts (versión automática)
         MonoBehaviour[] scripts = GetComponents<MonoBehaviour>();
         foreach (MonoBehaviour script in scripts)
         {
@@ -80,10 +77,7 @@ public class EnemyHealth : MonoBehaviour
             }
         }
 
-        // 3. Reproducir animación
         animator?.SetTrigger(deathTrigger);
-
-        // 4. Destrucción después de un delay
         Destroy(gameObject, deathDelay);
     }
 

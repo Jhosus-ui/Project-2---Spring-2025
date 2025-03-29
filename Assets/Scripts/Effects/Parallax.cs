@@ -22,7 +22,7 @@ public class Parallax : MonoBehaviour
     {
         Vector2 velocidadActual = jugadorRB.linearVelocity;
 
-        // Solo aplica el efecto parallax si el jugador se est� moviendo
+        //effecto parallax
         if (velocidadActual != velocidadAnterior)
         {
             offset = (jugadorRB.linearVelocity.x * 0.1f) * velocidadMovimiento * Time.deltaTime;

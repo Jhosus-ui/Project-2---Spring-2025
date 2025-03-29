@@ -3,6 +3,9 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody2D))]
 public class PlayerMovement : MonoBehaviour
 {
+
+    //I don't know if I did the enums completely right,
+    //but this is what I can do and with YouTube tutorials included hahah
     [Header("Movement Settings")]
     public float moveSpeed = 5f;
     public float jumpForce = 10f;
@@ -18,7 +21,7 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("Sound Effects")]
     public AudioClip jumpSound;
-    public AudioClip footstepSound;  // Cambiado de footstepSounds[] a footstepSound
+    public AudioClip footstepSound;
 
     private AudioSource audioSource;
     private bool isPlayingFootstep = false;
@@ -214,10 +217,6 @@ public class PlayerMovement : MonoBehaviour
             ChangeState(PlayerState.Jump);
         }
     }
-
-    // Elimina el método PlayRandomFootstep() ya que no lo necesitaremos más
-
-    // Método mejorado para cambiar de estado
     public void ChangeState(PlayerState newState)
     {
         if (currentState == newState) return;

@@ -12,7 +12,6 @@ public class OneTimeSoundTrigger : MonoBehaviour
 
     private void Awake()
     {
-        // Obtener el AudioSource automáticamente
         audioSource = GetComponent<AudioSource>();
         audioSource.playOnAwake = false;
         audioSource.loop = false; // Asegurar que no se repita
@@ -23,15 +22,12 @@ public class OneTimeSoundTrigger : MonoBehaviour
         // Solo reproducir si es el jugador, hay sonido y no se ha activado antes
         if (other.CompareTag("Player") && !hasTriggered && soundToPlay != null)
         {
-            audioSource.PlayOneShot(soundToPlay); // Reproducción one-shot
-            hasTriggered = true; // Marcar como reproducido
-
-            // Opcional: Desactivar el collider después del primer uso
+            audioSource.PlayOneShot(soundToPlay); 
+            hasTriggered = true; 
             GetComponent<Collider2D>().enabled = false;
         }
     }
 
-    // Opcional: Resetear si quieres que funcione otra vez
     public void ResetTrigger()
     {
         hasTriggered = false;

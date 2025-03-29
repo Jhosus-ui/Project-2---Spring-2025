@@ -5,8 +5,6 @@ public class Plataformas : MonoBehaviour
     PlatformEffector2D pE2D;
     public bool LeftPlatform;
     public float upwardForce = 5f;
-
-    // Agregar contador de tiempo para la acción de bajarse
     private float dropTimer = 0f;
     private float dropDelay = 0.5f;
 
@@ -17,22 +15,20 @@ public class Plataformas : MonoBehaviour
 
     void Update()
     {
-        // Si el jugador estaba tratando de bajar, pero ya pasó el tiempo
+ 
         if (LeftPlatform && Time.time > dropTimer)
         {
-            // Restaurar la plataforma
             pE2D.rotationalOffset = 0;
             LeftPlatform = false;
-            gameObject.layer = 6; // Ajusta según tu configuración de capas
+            gameObject.layer = 6; 
         }
 
         if (Input.GetKeyDown(KeyCode.S) && !LeftPlatform)
         {
             pE2D.rotationalOffset = 180;
             LeftPlatform = true;
-            gameObject.layer = 2; // Cambia a la capa "Ignore Raycast"
+            gameObject.layer = 2; 
 
-            // Configurar temporizador para restaurar automáticamente
             dropTimer = Time.time + dropDelay;
         }
     }
@@ -41,7 +37,7 @@ public class Plataformas : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Player") && !LeftPlatform)
         {
-            // Solo aplicar el impulso si el jugador viene desde abajo
+ 
             if (collision.relativeVelocity.y > 0)
             {
                 Rigidbody2D playerRb = collision.gameObject.GetComponent<Rigidbody2D>();
@@ -55,7 +51,6 @@ public class Plataformas : MonoBehaviour
             }
             else
             {
-                // Si el jugador está parado sobre la plataforma, restaurar valores por seguridad
                 pE2D.rotationalOffset = 0;
                 LeftPlatform = false;
             }

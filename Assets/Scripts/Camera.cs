@@ -3,14 +3,14 @@ using UnityEngine;
 public class CameraFollow2D : MonoBehaviour
 {
     [Header("Follow Settings")]
-    public Transform target; // Objeto que la cámara seguirá (normalmente el jugador)
-    public float smoothSpeed = 0.125f; // Suavizado del movimiento de la cámara
-    public Vector3 offset; // Desplazamiento de la cámara respecto al objetivo
+    public Transform target; 
+    public float smoothSpeed = 0.125f; 
+    public Vector3 offset; 
 
     [Header("Camera Bounds")]
-    public bool useBounds = false; // Activar límites de la cámara
-    public Vector2 minBounds; // Límite mínimo (esquina inferior izquierda)
-    public Vector2 maxBounds; // Límite máximo (esquina superior derecha)
+    public bool useBounds = false; 
+    public Vector2 minBounds; 
+    public Vector2 maxBounds; 
 
     private void LateUpdate()
     {
@@ -20,14 +20,10 @@ public class CameraFollow2D : MonoBehaviour
             return;
         }
 
-        // Posición deseada de la cámara
         Vector3 desiredPosition = target.position + offset;
-
-        // Suavizado del movimiento de la cámara
         Vector3 smoothedPosition = Vector3.Lerp(transform.position, desiredPosition, smoothSpeed);
         transform.position = smoothedPosition;
 
-        // Aplicar límites de la cámara si están activados
         if (useBounds)
         {
             transform.position = new Vector3(
@@ -40,7 +36,7 @@ public class CameraFollow2D : MonoBehaviour
 
     private void OnDrawGizmosSelected()
     {
-        // Dibuja los límites de la cámara en el Editor
+
         if (useBounds)
         {
             Gizmos.color = Color.green;

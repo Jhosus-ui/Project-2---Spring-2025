@@ -3,9 +3,9 @@ using UnityEngine;
 public class PlayerManager : MonoBehaviour
 {
     [Header("Player Settings")]
-    public bool movementEnabled = true; // Activa o desactiva el movimiento
-    public bool climbingEnabled = true; // Activa o desactiva la escalada
-    public bool attackEnabled = true; // Activa o desactiva el ataque
+    public bool movementEnabled = true; 
+    public bool climbingEnabled = true; 
+    public bool attackEnabled = true; 
 
     private PlayerMovement playerMovement;
     private PlayerAttack playerAttack;

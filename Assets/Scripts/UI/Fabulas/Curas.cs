@@ -11,7 +11,7 @@ public class PulseHealingSystem : MonoBehaviour
     public Image[] pulseImages;
 
     [Header("Referencias")]
-    public PlayerHealth playerHealth; // Arrastra el componente PlayerHealth aquí
+    public PlayerHealth playerHealth; 
 
     [Header("Apariencia")]
     public Color activeColor = new Color(0.2f, 0.8f, 1f);
@@ -65,26 +65,19 @@ public class PulseHealingSystem : MonoBehaviour
     {
         isHealing = true;
 
-        // Consumir pulso
         currentPulses--;
         UpdateUI();
-
-        // Aplicar curación
         playerHealth.Heal(healthPerPulse);
-
-        // Reproducir sonido de curación
         if (healSound != null && audioSource != null)
         {
             audioSource.PlayOneShot(healSound);
         }
 
-        // Iniciar recarga si es necesario
         if (rechargeRoutine == null && currentPulses < maxPulses)
         {
             rechargeRoutine = StartCoroutine(RechargePulse());
         }
 
-        // Pequeño delay para evitar spam
         yield return new WaitForSeconds(0.5f);
         isHealing = false;
     }
@@ -96,7 +89,6 @@ public class PulseHealingSystem : MonoBehaviour
         currentPulses++;
         UpdateUI();
 
-        // Reproducir sonido de recarga
         if (rechargeSound != null && audioSource != null)
         {
             audioSource.PlayOneShot(rechargeSound);
@@ -120,7 +112,6 @@ public class PulseHealingSystem : MonoBehaviour
             {
                 pulseImages[i].color = i < currentPulses ? activeColor : inactiveColor;
 
-                // Efecto visual para el pulso en recarga
                 if (i == currentPulses && rechargeRoutine != null)
                 {
                     pulseImages[i].fillAmount = Mathf.PingPong(Time.time * 2, 1);

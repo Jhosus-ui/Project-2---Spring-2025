@@ -6,7 +6,7 @@ public class Bala : MonoBehaviour
     [Header("Configuración")]
     public float velocidad = 10f;
     public float distanciaMaxima = 15f;
-    public int dano = 1; // Renombrado de 'damage' a 'dano' para evitar conflictos
+    public int dano = 1; 
 
     // Dirección se calcula al iniciar, no es pública
     private Vector2 direccionMovimiento;
@@ -39,14 +39,14 @@ public class Bala : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D otro)
     {
-        if (otro.CompareTag("Enemy")) // Asegúrate que tus enemigos tengan este tag
+        if (otro.CompareTag("Enemy")) // Asegúrate tag
         {
             EnemyHealth saludEnemigo = otro.GetComponent<EnemyHealth>();
             if (saludEnemigo != null) saludEnemigo.TakeDamage(dano);
 
             DestruirBala();
         }
-        else if (otro.CompareTag("Mapa")) // Ejemplo de otro objeto
+        else if (otro.CompareTag("Mapa")) 
         {
             DestruirBala();
         }

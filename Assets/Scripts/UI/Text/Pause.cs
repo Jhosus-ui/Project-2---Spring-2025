@@ -5,26 +5,32 @@ using UnityEngine.Audio;
 
 public class PauseMenu : MonoBehaviour
 {
-    [Header("Referencias UI")]
+
+    // Option 1: Using AudioMixer
+    // Option 2: Resume all AudioSources individually
+
+    [Header("UI References")]
     public Button pauseButton;
     public GameObject pauseMenuPanel;
     public Button resumeButton;
     public Button exitButton;
 
-    [Header("Configuración de Audio")]
-    public AudioMixer masterMixer; // Opcional: Para control por mixer
-    private float prePauseVolume; // Guardar volumen antes de pausar
+    [Header("Audio Settings")]
+    public AudioMixer masterMixer; 
+
+    [Header("Scene Settings")]
+    public string targetSceneName = "MainMenu"; 
+
+    private float prePauseVolume;
     private AudioSource[] allAudioSources;
     private bool isPaused = false;
 
     private void Start()
     {
-        // Configurar listeners de los botones
+
         pauseButton.onClick.AddListener(TogglePause);
         resumeButton.onClick.AddListener(ResumeGame);
-        exitButton.onClick.AddListener(ExitGame);
-
-        // Inicializar estado del menú
+        exitButton.onClick.AddListener(LoadTargetScene);
         pauseMenuPanel.SetActive(false);
     }
 
@@ -43,15 +49,9 @@ public class PauseMenu : MonoBehaviour
     private void PauseGame()
     {
         isPaused = true;
-
-        // Pausar el tiempo del juego
         Time.timeScale = 0f;
-
-        // Mostrar menú de pausa
         pauseMenuPanel.SetActive(true);
         pauseButton.gameObject.SetActive(false);
-
-        // Pausar todos los audios
         PauseAllAudio();
     }
 
@@ -59,36 +59,36 @@ public class PauseMenu : MonoBehaviour
     {
         isPaused = false;
 
-        // Reanudar el tiempo del juego
+        
         Time.timeScale = 1f;
 
-        // Ocultar menú de pausa
+        
         pauseMenuPanel.SetActive(false);
         pauseButton.gameObject.SetActive(true);
 
-        // Reanudar todos los audios
+        
         ResumeAllAudio();
     }
 
-    private void ExitGame()
+    private void LoadTargetScene()
     {
-        // Asegurarse de reanudar el tiempo y audio antes de salir
+       
         Time.timeScale = 1f;
         ResumeAllAudio();
 
-        // Cambiar a la escena del menú principal
-        SceneManager.LoadScene("MainMenu");
+       
+        SceneManager.LoadScene(targetSceneName);
     }
 
     private void PauseAllAudio()
     {
-        // Opción 1: Usando AudioMixer (recomendado si tienes uno configurado)
+      
         if (masterMixer != null)
         {
             masterMixer.GetFloat("MasterVolume", out prePauseVolume);
-            masterMixer.SetFloat("MasterVolume", -80f); // Silenciar completamente
+            masterMixer.SetFloat("MasterVolume", -80f); 
         }
-        // Opción 2: Pausar todos los AudioSources individualmente
+       
         else
         {
             allAudioSources = FindObjectsOfType<AudioSource>();
@@ -104,12 +104,12 @@ public class PauseMenu : MonoBehaviour
 
     private void ResumeAllAudio()
     {
-        // Opción 1: Usando AudioMixer
+        
         if (masterMixer != null)
         {
             masterMixer.SetFloat("MasterVolume", prePauseVolume);
         }
-        // Opción 2: Reanudar todos los AudioSources individualmente
+  
         else
         {
             if (allAudioSources != null)
@@ -124,7 +124,7 @@ public class PauseMenu : MonoBehaviour
 
     private void Update()
     {
-        // Pausar con la tecla ESC
+     
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             TogglePause();

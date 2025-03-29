@@ -1,71 +1,40 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using System.Collections;
 
 public class PlayerHealth : MonoBehaviour
 {
-    public enum PlayerState
-    {
-        Normal,
-        Hit,
-        Dead
-    }
+    public enum PlayerState { Normal, Hit, Dead }
 
-    [Header("Health Settings")]
     public int maxHealth = 5;
     public float invulnerabilityTime = 1f;
     public Image[] healthImages;
     public Sprite fullHealthSprite;
     public Sprite emptyHealthSprite;
-
-    [Header("Hit Animation")]
     public Animator animator;
     public string hitTrigger = "Hit";
-    public string deathTrigger = "Death"; 
+    public string deathTrigger = "Death";
     public float hitAnimationTime = 0.5f;
-
-    [Header("References")]
     public PlayerManager playerManager;
     public Collider2D damageCollider;
+    public AudioClip hitSound;
+    public AudioClip deathSound;
+    public string sceneOnDeath = "GameOver";
 
-    public int currentHealth;
+    public  int currentHealth;
     private PlayerState currentState = PlayerState.Normal;
     private bool isInvulnerable = false;
     private Coroutine invulnerabilityCoroutine;
     private Rigidbody2D rb;
-
-    [Header("Sound Effects")]
-    public AudioClip hitSound;
-    public AudioClip deathSound;
-
     private AudioSource audioSource;
-
 
     void Start()
     {
-        // ... (código existente)
-        audioSource = GetComponent<AudioSource>();
-        if (audioSource == null)
-        {
-            audioSource = gameObject.AddComponent<AudioSource>();
-        }
-    }
-
-    void UpdateHealthUI()
-    {
-        for (int i = 0; i < healthImages.Length; i++)
-        {
-            if (i < currentHealth)
-            {
-                healthImages[i].sprite = fullHealthSprite;
-            }
-            else
-            {
-                healthImages[i].sprite = emptyHealthSprite;
-            }
-
-            healthImages[i].gameObject.SetActive(i < maxHealth);
-        }
+        rb = GetComponent<Rigidbody2D>();
+        audioSource = GetComponent<AudioSource>() ?? gameObject.AddComponent<AudioSource>();
+        currentHealth = maxHealth;
+        UpdateHealthUI();
     }
 
     public void TakeDamage(int damage)
@@ -73,114 +42,61 @@ public class PlayerHealth : MonoBehaviour
         if (currentState == PlayerState.Dead || isInvulnerable) return;
 
         ChangeState(PlayerState.Hit);
-        currentHealth -= damage;
-        currentHealth = Mathf.Max(0, currentHealth);
+        currentHealth = Mathf.Max(0, currentHealth - damage);
         UpdateHealthUI();
 
-        if (hitSound != null)
-        {
-            audioSource.PlayOneShot(hitSound);
-        }
-
-        if (invulnerabilityCoroutine != null)
-        {
-            StopCoroutine(invulnerabilityCoroutine);
-        }
+        if (hitSound) audioSource.PlayOneShot(hitSound);
+        if (invulnerabilityCoroutine != null) StopCoroutine(invulnerabilityCoroutine);
         invulnerabilityCoroutine = StartCoroutine(InvulnerabilityTimer());
 
-        if (currentHealth <= 0)
-        {
-            Die();
-        }
-    }
-
-    IEnumerator InvulnerabilityTimer()
-    {
-        isInvulnerable = true;
-        if (damageCollider != null)
-        {
-            damageCollider.enabled = false;
-        }
-
-        yield return new WaitForSeconds(invulnerabilityTime);
-
-        isInvulnerable = false;
-        if (damageCollider != null && currentState != PlayerState.Dead)
-        {
-            damageCollider.enabled = true;
-        }
+        if (currentHealth <= 0) Die();
     }
 
     void Die()
     {
         ChangeState(PlayerState.Dead);
-        Debug.Log("Player has died!");
+        if (deathSound) audioSource.PlayOneShot(deathSound);
 
-        if (deathSound != null)
-        {
-            audioSource.PlayOneShot(deathSound);
+        rb.linearVelocity = Vector2.zero;
+        rb.bodyType = RigidbodyType2D.Static;
 
-        }
+        damageCollider.enabled = false;
+        playerManager.movementEnabled = false;
+        playerManager.attackEnabled = false;
+        playerManager.climbingEnabled = false;
+
+        Invoke(nameof(LoadDeathScene), 2f);
     }
 
-        void ChangeState(PlayerState newState)
+    void LoadDeathScene() => SceneManager.LoadScene(sceneOnDeath);
+
+    IEnumerator InvulnerabilityTimer()
     {
-        switch (currentState)
+        isInvulnerable = true;
+        damageCollider.enabled = false;
+        yield return new WaitForSeconds(invulnerabilityTime);
+        isInvulnerable = false;
+        if (currentState != PlayerState.Dead) damageCollider.enabled = true;
+    }
+
+    void ChangeState(PlayerState newState)
+    {
+        if (currentState == PlayerState.Hit && playerManager != null)
         {
-            case PlayerState.Hit:
-                if (playerManager != null)
-                {
-                    playerManager.movementEnabled = true;
-                    playerManager.attackEnabled = true;
-                }
-                break;
+            playerManager.movementEnabled = true;
+            playerManager.attackEnabled = true;
         }
 
-        switch (newState)
+        if (newState == PlayerState.Hit)
         {
-            case PlayerState.Hit:
-                if (animator != null)
-                {
-                    animator.SetTrigger(hitTrigger);
-                }
-
-                if (playerManager != null)
-                {
-                    playerManager.movementEnabled = false;
-                    playerManager.attackEnabled = false;
-                }
-
-                StartCoroutine(ReturnToNormalAfterHit());
-                break;
-
-            case PlayerState.Dead:
-                // Activar animación de muerte usando el trigger específico
-                if (animator != null)
-                {
-                    animator.SetTrigger(deathTrigger);
-                }
-
-                // Congelar al jugador
-                if (rb != null)
-                {
-                    rb.linearVelocity = Vector2.zero;
-                    rb.simulated = false; // Desactiva la física sin cambiar isKinematic
-                }
-
-                // Desactivar controles permanentemente
-                if (playerManager != null)
-                {
-                    playerManager.movementEnabled = false;
-                    playerManager.attackEnabled = false;
-                    playerManager.climbingEnabled = false;
-                }
-
-                // Desactivar colliders
-                if (damageCollider != null)
-                {
-                    damageCollider.enabled = false;
-                }
-                break;
+            animator.SetTrigger(hitTrigger);
+            playerManager.movementEnabled = false;
+            playerManager.attackEnabled = false;
+            StartCoroutine(ReturnToNormalAfterHit());
+        }
+        else if (newState == PlayerState.Dead)
+        {
+            animator.SetTrigger(deathTrigger);
         }
 
         currentState = newState;
@@ -189,10 +105,15 @@ public class PlayerHealth : MonoBehaviour
     IEnumerator ReturnToNormalAfterHit()
     {
         yield return new WaitForSeconds(hitAnimationTime);
+        if (currentState == PlayerState.Hit && currentHealth > 0) ChangeState(PlayerState.Normal);
+    }
 
-        if (currentState == PlayerState.Hit && currentHealth > 0)
+    void UpdateHealthUI()
+    {
+        for (int i = 0; i < healthImages.Length; i++)
         {
-            ChangeState(PlayerState.Normal);
+            healthImages[i].sprite = i < currentHealth ? fullHealthSprite : emptyHealthSprite;
+            healthImages[i].gameObject.SetActive(i < maxHealth);
         }
     }
 
@@ -209,4 +130,3 @@ public class PlayerHealth : MonoBehaviour
         UpdateHealthUI();
     }
 }
-

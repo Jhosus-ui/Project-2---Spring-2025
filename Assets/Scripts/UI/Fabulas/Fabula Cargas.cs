@@ -4,10 +4,11 @@ using System.Collections;
 
 public class FabulasAmmo : MonoBehaviour
 {
+    //Inspired by Lies of P
     [Header("Ammo Settings")]
-    public int maxCharges = 3; // Máximo de cargas disponibles
-    public float rechargeTime = 2f; // Tiempo para recargar una carga
-    public Image[] chargeImages; // Imágenes UI que representan las cargas (debe tener tamaño igual a maxCharges)
+    public int maxCharges = 3; 
+    public float rechargeTime = 2f; 
+    public Image[] chargeImages; 
 
     [Header("Visual Feedback")]
     public Color activeChargeColor = Color.white;
@@ -33,7 +34,6 @@ public class FabulasAmmo : MonoBehaviour
         currentCharges = maxCharges;
         UpdateChargeUI();
 
-        // Asegurarse de que hay suficientes imágenes
         if (chargeImages.Length != maxCharges)
         {
             Debug.LogWarning("El número de imágenes de carga no coincide con maxCharges");

@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class Volador : MonoBehaviour
 {
+    // If they change one thing or another about this one, it would fly
     public enum EnemyState
     {
         Patrolling,

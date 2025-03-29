@@ -3,6 +3,8 @@ using System.Collections;
 
 public class EnemyPlatformerController : MonoBehaviour
 {
+    //I didn't bother making four different codes for the enemies, it's the same,
+    //just change some names for better evaluation, I think I complicated this... hahah
     public enum EnemyState
     {
         Patrolling,
