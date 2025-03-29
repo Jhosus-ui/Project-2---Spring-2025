@@ -14,16 +14,22 @@ public class DialogueTrigger : MonoBehaviour
     [Tooltip("Velocidad del efecto de aparición/desaparición")]
     public float fadeSpeed = 2f;
 
+    [Header("Efecto de Sonido")]
+    [Tooltip("Clip de audio para el efecto de texteo")]
+    public AudioClip textSound; // Solo necesitamos el clip
+
     [Header("Efecto de Desvanecimiento")]
     [Tooltip("Ancho máximo del efecto de desvanecimiento horizontal")]
     public float fadeWidth = 20f;
 
     private bool hasBeenTriggered = false;
-    private Coroutine fadeCoroutine;
+    private AudioSource audioSource; // AudioSource caché
 
     private void Start()
     {
-        // Asegurarse que el texto está oculto al inicio
+        // Obtener el AudioSource adjunto al mismo GameObject
+        audioSource = GetComponent<AudioSource>();
+
         if (dialogueText != null)
         {
             dialogueText.gameObject.SetActive(false);
@@ -44,6 +50,12 @@ public class DialogueTrigger : MonoBehaviour
     {
         // Activar el texto
         dialogueText.gameObject.SetActive(true);
+
+        // Iniciar el sonido de texteo (si existe el clip)
+        if (textSound != null && audioSource != null)
+        {
+            audioSource.PlayOneShot(textSound);
+        }
 
         // Efecto de aparición
         float timer = 0;

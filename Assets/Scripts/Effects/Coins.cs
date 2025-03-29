@@ -5,14 +5,24 @@ public class CollectableCell : MonoBehaviour
     public int puntos = 1;
     public float levitationHeight = 0.5f; // Altura de la levitación
     public float levitationSpeed = 1f; // Velocidad del movimiento
+    public AudioClip collectSound; // Sonido al recoger el ítem
 
     private Vector3 startPosition;
     private float randomOffset;
+    private AudioSource audioSource;
 
     private void Start()
     {
         startPosition = transform.position;
         randomOffset = Random.Range(0f, 2f * Mathf.PI); // Offset aleatorio para variedad
+
+        // Añadir AudioSource si no existe
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null)
+        {
+            audioSource = gameObject.AddComponent<AudioSource>();
+        }
+        audioSource.playOnAwake = false;
     }
 
     private void Update()
@@ -20,17 +30,26 @@ public class CollectableCell : MonoBehaviour
         // Efecto de levitación usando una función senoidal
         float newY = startPosition.y + Mathf.Sin(Time.time * levitationSpeed + randomOffset) * levitationHeight;
         transform.position = new Vector3(startPosition.x, newY, startPosition.z);
-
-        // Rotación opcional (descomenta si quieres que rote)
-        // transform.Rotate(Vector3.up * 20 * Time.deltaTime);
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Player"))
         {
+            // Reproducir sonido si existe
+            if (collectSound != null)
+            {
+                audioSource.PlayOneShot(collectSound);
+            }
+
             ScoreSystem.instance.AgregarPuntos(puntos);
-            Destroy(gameObject);
+
+            // Desactivar el collider y renderer para que no se vea pero el sonido pueda terminar
+            GetComponent<Collider2D>().enabled = false;
+            GetComponent<Renderer>().enabled = false;
+
+            // Destruir el objeto después de que termine el sonido
+            Destroy(gameObject, collectSound != null ? collectSound.length : 0);
         }
     }
 }

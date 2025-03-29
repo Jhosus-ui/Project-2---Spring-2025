@@ -13,6 +13,10 @@ public class FabulasAmmo : MonoBehaviour
     public Color activeChargeColor = Color.white;
     public Color emptyChargeColor = Color.gray;
 
+    [Header("Sound Effects")]
+    public AudioClip rechargeSound;
+    private AudioSource audioSource;
+
     private int currentCharges;
     private Coroutine rechargeCoroutine;
     private PlayerAttack playerAttack;
@@ -20,6 +24,7 @@ public class FabulasAmmo : MonoBehaviour
     private void Awake()
     {
         playerAttack = GetComponent<PlayerAttack>();
+        audioSource = GetComponent<AudioSource>();
         InitializeCharges();
     }
 
@@ -73,6 +78,12 @@ public class FabulasAmmo : MonoBehaviour
         {
             currentCharges++;
             UpdateChargeUI();
+
+            // Reproducir sonido de recarga
+            if (rechargeSound != null && audioSource != null)
+            {
+                audioSource.PlayOneShot(rechargeSound);
+            }
 
             if (currentCharges < maxCharges)
             {

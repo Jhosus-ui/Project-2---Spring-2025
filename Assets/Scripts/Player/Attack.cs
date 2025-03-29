@@ -6,12 +6,12 @@ public class PlayerAttack : MonoBehaviour
     public float attackCooldown = 0.5f;
     public float swordAttackDuration = 0.5f;
     public float gunAttackDuration = 0.5f;
-    public int swordDamage = 1; // Daño del ataque de espada
-    public int bulletDamage = 1; // Daño de las balas
+    public int swordDamage = 1; 
+    public int bulletDamage = 1; 
 
     [Header("Sword Attack")]
-    public Transform swordHitPoint; // Punto de origen del ataque de espada
-    public float swordHitRadius = 0.5f; // Radio del área de daño de la espada
+    public Transform swordHitPoint; 
+    public float swordHitRadius = 0.5f; 
 
     [Header("Gun Attack")]
     public Transform gunFirePoint;
@@ -25,9 +25,20 @@ public class PlayerAttack : MonoBehaviour
     [Header("Ammo System")]
     public FabulasAmmo fabulasAmmo;
 
+    [Header("Sound Effects")]
+    public AudioClip swordSwingSound;
+    public AudioClip gunShootSound;
+
+    private AudioSource audioSource;
+
     private void Awake()
     {
         playerMovement = GetComponent<PlayerMovement>();
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null)
+        {
+            audioSource = gameObject.AddComponent<AudioSource>();
+        }
     }
 
     private void Update()
@@ -70,6 +81,10 @@ public class PlayerAttack : MonoBehaviour
         {
             ApplyDamage(enemy, swordDamage);
         }
+        if (swordSwingSound != null)
+        {
+            audioSource.PlayOneShot(swordSwingSound);
+        }
     }
 
     // Método para el disparo
@@ -92,6 +107,11 @@ public class PlayerAttack : MonoBehaviour
 
                 // Rotación visual opcional (si tu sprite lo necesita)
                 nuevaBala.transform.right = dir;
+
+                if (gunShootSound != null)
+                {
+                    audioSource.PlayOneShot(gunShootSound);
+                }
             }
 
         }

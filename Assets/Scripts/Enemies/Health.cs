@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class EnemyHealth : MonoBehaviour
 {
-    [Header("Configuraci�n")]
+    [Header("Configuración")]
     public int maxHealth = 3;
     public float invulnerabilityTime = 0.5f;
     public float deathDelay = 2f;
@@ -11,16 +11,22 @@ public class EnemyHealth : MonoBehaviour
     public Animator animator;
     public string hitTrigger = "Hit";
     public string deathTrigger = "Death";
-    public Rigidbody2D rb; // A�adido para control f�sico
+    public Rigidbody2D rb; // Añadido para control físico
+
+    [Header("Sound Effects")]
+    public AudioClip hitSound;
+    public AudioClip deathSound;
+    private AudioSource audioSource;
 
     public int currentHealth;
     private bool isDead = false;
-    private Vector2 deathPosition; // Guardar� la posici�n al morir
+    private Vector2 deathPosition; // Guardará la posición al morir
 
     void Start()
     {
         currentHealth = maxHealth;
         if (rb == null) rb = GetComponent<Rigidbody2D>();
+        audioSource = GetComponent<AudioSource>();
     }
 
     public void TakeDamage(int damage)
@@ -28,6 +34,12 @@ public class EnemyHealth : MonoBehaviour
         if (isDead) return;
 
         currentHealth -= damage;
+
+        // Reproducir sonido de golpe
+        if (hitSound != null && audioSource != null)
+        {
+            audioSource.PlayOneShot(hitSound);
+        }
 
         if (currentHealth <= 0)
         {
@@ -42,9 +54,15 @@ public class EnemyHealth : MonoBehaviour
     private void Die()
     {
         isDead = true;
-        deathPosition = transform.position; // Captura la posici�n exacta
+        deathPosition = transform.position; // Captura la posición exacta
 
-        // 1. Congelar f�sicamente el cuerpo
+        // Reproducir sonido de muerte
+        if (deathSound != null && audioSource != null)
+        {
+            audioSource.PlayOneShot(deathSound);
+        }
+
+        // 1. Congelar físicamente el cuerpo
         if (rb != null)
         {
             rb.linearVelocity = Vector2.zero;
@@ -52,7 +70,7 @@ public class EnemyHealth : MonoBehaviour
             rb.constraints = RigidbodyConstraints2D.FreezeAll;
         }
 
-        // 2. Desactivar scripts (versi�n autom�tica)
+        // 2. Desactivar scripts (versión automática)
         MonoBehaviour[] scripts = GetComponents<MonoBehaviour>();
         foreach (MonoBehaviour script in scripts)
         {
@@ -62,14 +80,14 @@ public class EnemyHealth : MonoBehaviour
             }
         }
 
-        // 3. Reproducir animaci�n
+        // 3. Reproducir animación
         animator?.SetTrigger(deathTrigger);
 
-        // 4. Destrucci�n despu�s de un delay
+        // 4. Destrucción después de un delay
         Destroy(gameObject, deathDelay);
     }
 
-    // Opcional: Mantener posici�n exacta durante la animaci�n
+    // Opcional: Mantener posición exacta durante la animación
     void LateUpdate()
     {
         if (isDead)

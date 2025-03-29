@@ -16,7 +16,13 @@ public class PlayerMovement : MonoBehaviour
     public LayerMask groundLayer;
     public LayerMask platformerLayer;
 
-    // Enum público para estados del jugador (accesible desde otros scripts)
+    [Header("Sound Effects")]
+    public AudioClip jumpSound;
+    public AudioClip footstepSound;  // Cambiado de footstepSounds[] a footstepSound
+
+    private AudioSource audioSource;
+    private bool isPlayingFootstep = false;
+
     public enum PlayerState
     {
         Idle,
@@ -34,7 +40,6 @@ public class PlayerMovement : MonoBehaviour
     [Header("State")]
     public PlayerState currentState;
 
-    // Variables para referencias y control
     private Rigidbody2D rb;
     private Animator animator;
     private bool isGrounded;
@@ -44,7 +49,6 @@ public class PlayerMovement : MonoBehaviour
     public bool isFacingRight = true;
     private bool isClimbing = false;
 
-    // Variables para bloquear movimiento durante ataques
     public bool isAttacking = false;
     private float attackLockoutTime = 0f;
 
@@ -52,11 +56,15 @@ public class PlayerMovement : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null)
+        {
+            audioSource = gameObject.AddComponent<AudioSource>();
+        }
     }
 
     private void Update()
     {
-        // Si está atacando, controlar el lockout
         if (isAttacking)
         {
             if (Time.time >= attackLockoutTime)
@@ -65,9 +73,8 @@ public class PlayerMovement : MonoBehaviour
             }
             else
             {
-                // Durante el ataque, permitir solo que caiga y se mueva (sin saltar ni cambiar animación)
                 HandleGravity();
-                float attackMoveInput = Input.GetAxis("Horizontal"); // Nombre diferente aquí
+                float attackMoveInput = Input.GetAxis("Horizontal");
                 rb.linearVelocity = new Vector2(attackMoveInput * moveSpeed * 0.5f, rb.linearVelocity.y);
                 FlipCharacter(attackMoveInput);
                 return;
@@ -89,27 +96,14 @@ public class PlayerMovement : MonoBehaviour
             coyoteTimeCounter -= Time.deltaTime;
         }
 
-        // Procesar movimiento horizontal
         float moveInput = Input.GetAxis("Horizontal");
         rb.linearVelocity = new Vector2(moveInput * moveSpeed, rb.linearVelocity.y);
 
-        // Voltear el personaje según dirección de movimiento
         FlipCharacter(moveInput);
-
-        // Manejar caída aumentada
         HandleGravity();
-
-        // Manejar saltos
         HandleJumps();
-
-        // Actualizar animaciones
         UpdateAnimationState(moveInput);
     }
-
-    //public bool IsFacingRight()
-    //{
-    //    return isFacingRight;
-    //} 
 
     private void FlipCharacter(float moveInput)
     {
@@ -133,7 +127,6 @@ public class PlayerMovement : MonoBehaviour
 
     private void HandleJumps()
     {
-        // No permitir saltos durante ataques
         if (isAttacking) return;
 
         // Salto normal
@@ -143,14 +136,24 @@ public class PlayerMovement : MonoBehaviour
             canDoubleJump = true;
             coyoteTimeCounter = 0;
             ChangeState(PlayerState.Jump);
+
+            if (jumpSound != null)
+            {
+                audioSource.PlayOneShot(jumpSound);
+            }
         }
         // Doble salto
         else if (!isGrounded && canDoubleJump && Input.GetButtonDown("Jump"))
         {
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, doubleJumpForce);
             canDoubleJump = false;
-            hasJumpedAfterFall = true; // Asegurarse de que no se pueda saltar después de un doble salto
+            hasJumpedAfterFall = true;
             ChangeState(PlayerState.Jump);
+
+            if (jumpSound != null)
+            {
+                audioSource.PlayOneShot(jumpSound);
+            }
         }
         // Salto después de caer
         else if (!isGrounded && !hasJumpedAfterFall && Input.GetButtonDown("Jump"))
@@ -158,19 +161,37 @@ public class PlayerMovement : MonoBehaviour
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
             hasJumpedAfterFall = true;
             ChangeState(PlayerState.Jump);
+            if (jumpSound != null)
+            {
+                audioSource.PlayOneShot(jumpSound);
+            }
         }
     }
 
-
     private void UpdateAnimationState(float moveInput)
     {
-        // No cambiar animaciones durante ataques
+        bool isMoving = isGrounded && Mathf.Abs(moveInput) > 0.1f;
+
+        // Reproducir sonido al caminar
+        if (isMoving)
+        {
+            if (footstepSound != null && !isPlayingFootstep)
+            {
+                audioSource.loop = true;
+                audioSource.clip = footstepSound;
+                audioSource.Play();
+                isPlayingFootstep = true;
+            }
+        }
+        // Detener sonido cuando dejamos de movernos
+        else if (!isMoving && isPlayingFootstep)
+        {
+            isPlayingFootstep = false;
+            audioSource.Stop();
+        }
+
         if (isAttacking) return;
-
-        // No cambiar animaciones durante Subidita (esperemos que termine)
         if (currentState == PlayerState.Subidita) return;
-
-        // No cambiar animaciones si está escalando
         if (isClimbing) return;
 
         if (isGrounded)
@@ -194,35 +215,30 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    // Elimina el método PlayRandomFootstep() ya que no lo necesitaremos más
+
     // Método mejorado para cambiar de estado
     public void ChangeState(PlayerState newState)
     {
         if (currentState == newState) return;
 
-        // Salir del estado anterior si es necesario
         ExitState(currentState);
-
-        // Aplicar nuevo estado
         currentState = newState;
-
-        // Configuración específica para el nuevo estado
         EnterState(currentState);
     }
 
     private void ExitState(PlayerState oldState)
     {
-        // Acciones al salir de un estado
         switch (oldState)
         {
             case PlayerState.Escalar:
-                animator.speed = 1f; // Asegurar que la velocidad de animación vuelve a la normalidad
+                animator.speed = 1f;
                 break;
         }
     }
 
     private void EnterState(PlayerState newState)
     {
-        // Acciones al entrar en un nuevo estado
         switch (newState)
         {
             case PlayerState.Idle:
@@ -239,8 +255,7 @@ public class PlayerMovement : MonoBehaviour
                 break;
             case PlayerState.Subidita:
                 animator.Play("Subidita");
-                // Configurar un temporizador para volver al estado normal después de X segundos
-                Invoke("ResetAfterSubidita", 0.5f); // Ajusta el tiempo según la duración de tu animación
+                Invoke("ResetAfterSubidita", 0.5f);
                 break;
             case PlayerState.Escalar:
                 animator.Play("Escalar");
@@ -251,12 +266,12 @@ public class PlayerMovement : MonoBehaviour
             case PlayerState.GunAttack:
                 animator.Play("GunAttack");
                 break;
-            //case PlayerState.Roll:
-            //    animator.Play("Roll");
-            //    break;
-            //case PlayerState.Parry:
-            //    animator.Play("Parry");
-            //    break;
+                //case PlayerState.Roll:
+                //    animator.Play("Roll");
+                //    break;
+                //case PlayerState.Parry:
+                //    animator.Play("Parry");
+                //    break;
         }
 
     }
@@ -265,7 +280,6 @@ public class PlayerMovement : MonoBehaviour
     {
         if (currentState == PlayerState.Subidita)
         {
-            // Volver al estado adecuado
             if (isGrounded)
             {
                 ChangeState(Mathf.Abs(rb.linearVelocity.x) > 0.1f ? PlayerState.Run : PlayerState.Idle);
@@ -325,7 +339,7 @@ public class PlayerMovement : MonoBehaviour
     public void ResetState()
     {
         isClimbing = false;
-        animator.speed = 1f; // Asegurar que la velocidad de animación vuelve a la normalidad
+        animator.speed = 1f;
 
         if (isGrounded)
         {

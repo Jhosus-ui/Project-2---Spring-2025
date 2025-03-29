@@ -17,6 +17,11 @@ public class PulseHealingSystem : MonoBehaviour
     public Color activeColor = new Color(0.2f, 0.8f, 1f);
     public Color inactiveColor = new Color(0.3f, 0.3f, 0.3f);
 
+    [Header("Sound Effects")]
+    public AudioClip healSound;
+    public AudioClip rechargeSound;
+    private AudioSource audioSource;
+
     private int currentPulses;
     private Coroutine rechargeRoutine;
     private bool isHealing = false;
@@ -29,10 +34,10 @@ public class PulseHealingSystem : MonoBehaviour
             playerHealth = Object.FindFirstObjectByType<PlayerHealth>();
         }
 
+        audioSource = GetComponent<AudioSource>();
         currentPulses = maxPulses;
         UpdateUI();
     }
-
 
     private void Update()
     {
@@ -67,6 +72,12 @@ public class PulseHealingSystem : MonoBehaviour
         // Aplicar curación
         playerHealth.Heal(healthPerPulse);
 
+        // Reproducir sonido de curación
+        if (healSound != null && audioSource != null)
+        {
+            audioSource.PlayOneShot(healSound);
+        }
+
         // Iniciar recarga si es necesario
         if (rechargeRoutine == null && currentPulses < maxPulses)
         {
@@ -84,6 +95,12 @@ public class PulseHealingSystem : MonoBehaviour
 
         currentPulses++;
         UpdateUI();
+
+        // Reproducir sonido de recarga
+        if (rechargeSound != null && audioSource != null)
+        {
+            audioSource.PlayOneShot(rechargeSound);
+        }
 
         if (currentPulses < maxPulses)
         {

@@ -21,7 +21,7 @@ public class PlayerHealth : MonoBehaviour
     [Header("Hit Animation")]
     public Animator animator;
     public string hitTrigger = "Hit";
-    public string deathTrigger = "Death"; // Nuevo trigger para la animación de muerte
+    public string deathTrigger = "Death"; 
     public float hitAnimationTime = 0.5f;
 
     [Header("References")]
@@ -32,19 +32,23 @@ public class PlayerHealth : MonoBehaviour
     private PlayerState currentState = PlayerState.Normal;
     private bool isInvulnerable = false;
     private Coroutine invulnerabilityCoroutine;
-    private Rigidbody2D rb; // Añadido para controlar la física al morir
+    private Rigidbody2D rb;
+
+    [Header("Sound Effects")]
+    public AudioClip hitSound;
+    public AudioClip deathSound;
+
+    private AudioSource audioSource;
+
 
     void Start()
     {
-        currentHealth = maxHealth;
-        UpdateHealthUI();
-
-        if (damageCollider == null)
+        // ... (código existente)
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null)
         {
-            damageCollider = GetComponent<Collider2D>();
+            audioSource = gameObject.AddComponent<AudioSource>();
         }
-
-        rb = GetComponent<Rigidbody2D>(); // Obtener el Rigidbody2D
     }
 
     void UpdateHealthUI()
@@ -72,6 +76,11 @@ public class PlayerHealth : MonoBehaviour
         currentHealth -= damage;
         currentHealth = Mathf.Max(0, currentHealth);
         UpdateHealthUI();
+
+        if (hitSound != null)
+        {
+            audioSource.PlayOneShot(hitSound);
+        }
 
         if (invulnerabilityCoroutine != null)
         {
@@ -106,9 +115,15 @@ public class PlayerHealth : MonoBehaviour
     {
         ChangeState(PlayerState.Dead);
         Debug.Log("Player has died!");
+
+        if (deathSound != null)
+        {
+            audioSource.PlayOneShot(deathSound);
+
+        }
     }
 
-    void ChangeState(PlayerState newState)
+        void ChangeState(PlayerState newState)
     {
         switch (currentState)
         {

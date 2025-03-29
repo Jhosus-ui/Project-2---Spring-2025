@@ -13,9 +13,9 @@ GameObject:
   - component: {fileID: 2534417593166749510}
   - component: {fileID: 4006470755876777195}
   - component: {fileID: 2022985550176101384}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: 'Bala '
-  m_TagString: Untagged
+  m_TagString: Bala
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -78,7 +78,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -287415837
   m_SortingLayer: 6
-  m_SortingOrder: 2
+  m_SortingOrder: 4
   m_Sprite: {fileID: 2028215452, guid: 98d5ff22fc6a8f342bc14a5214ba3e1b, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -139,8 +139,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d53fab3496b3a4c4d8a23a3cf9fec093, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 20
-  maxDistance: 10
+  velocidad: 10
+  distanciaMaxima: 15
+  dano: 1
 --- !u!50 &2022985550176101384
 Rigidbody2D:
   serializedVersion: 5
