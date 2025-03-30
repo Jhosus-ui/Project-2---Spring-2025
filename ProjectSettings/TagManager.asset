@@ -2,23 +2,29 @@
 %TAG !u! tag:unity3d.com,2011:
 --- !u!78 &1
 TagManager:
-  serializedVersion: 2
-  tags: []
+  serializedVersion: 3
+  tags:
+  - 'Suelo '
+  - OneWayPlatform
+  - Ladder
+  - Bala
+  - Mapa
+  - Enemy
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Paralax
   - Water
   - UI
+  - Platforms
+  - 'Suelo '
+  - 'Pared '
   - 
+  - 'Escaleras '
   - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
+  - 'Player '
+  - 'Mesages '
   - 
   - 
   - 
@@ -41,3 +47,26 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: 'Fondo '
+    uniqueID: 2163568807
+    locked: 0
+  - name: Mapa
+    uniqueID: 3687166155
+    locked: 0
+  - name: 'Escaleras '
+    uniqueID: 2647058007
+    locked: 0
+  - name: 'Plataformas '
+    uniqueID: 63076551
+    locked: 0
+  - name: Personajes
+    uniqueID: 4029775519
+    locked: 0
+  - name: 'Decorations '
+    uniqueID: 4007551459
+    locked: 0
+  - name: UI
+    uniqueID: 1068655405
+    locked: 0
+  m_RenderingLayers:
+  - Default
