@@ -38,7 +38,9 @@ public class PlayerMovement : MonoBehaviour
         GunAttack,
         //Roll,
         //Parry
-    }
+        // Talvez el sistema de estados no es lo mio, pero recuerda esto josue;
+        // siempre se puede mejorar y aprender más
+    }   //Y ahora saber como explicarias esto en Ingles ;(
 
     [Header("State")]
     public PlayerState currentState;
